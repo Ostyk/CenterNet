@@ -23,8 +23,12 @@ def make_ct_layer(dim):
 def make_pool_layer(dim):
     return nn.MaxPool2d(kernel_size=2, stride=2)
 
-def make_unpool_layer(dim):
-    return nn.Upsample(scale_factor=2)
+def make_unpool_layer(dim, mode="nearest"):
+    """"
+    https://twitter.com/jaakkolehtinen/status/1258331829817487360?lang=en
+    #change interpolation here: nearest-neighbor, bilinear, bicubic, Lanczos
+    """
+    return nn.Upsample(scale_factor=2, mode=mode)
 
 def make_kp_layer(cnv_dim, curr_dim, out_dim):
     return nn.Sequential(
