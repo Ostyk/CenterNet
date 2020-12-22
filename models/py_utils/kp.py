@@ -16,14 +16,14 @@ from .kp_utils import make_merge_layer, make_inter_layer, make_cnv_layer
 
 class kp_module(nn.Module):
     def __init__(
-        self, n, dims, modules, layer=residual,
+        self, n, dims, modules, layer=residual, interpolation_mode,
         make_up_layer=make_layer, make_low_layer=make_layer,
         make_hg_layer=make_layer, make_hg_layer_revr=make_layer_revr,
         make_pool_layer=make_pool_layer, make_unpool_layer=make_unpool_layer,
         make_merge_layer=make_merge_layer, **kwargs
     ):
         super(kp_module, self).__init__()
-
+        self.interpolation_mode = interpolation_mode
         self.n   = n
 
         curr_mod = modules[0]
@@ -36,7 +36,7 @@ class kp_module(nn.Module):
             3, curr_dim, curr_dim, curr_mod, 
             layer=layer, **kwargs
         )  
-        self.max1 = make_pool_layer(curr_dim)
+        self.max1 = make_pool_layer(curr_dim, self.interpolation_mode)
         self.low1 = make_hg_layer(
             3, curr_dim, next_dim, curr_mod,
             layer=layer, **kwargs
@@ -83,7 +83,7 @@ class kp(nn.Module):
         make_hg_layer=make_layer, make_hg_layer_revr=make_layer_revr,
         make_pool_layer=make_pool_layer, make_unpool_layer=make_unpool_layer,
         make_merge_layer=make_merge_layer, make_inter_layer=make_inter_layer, 
-        kp_layer=residual
+        kp_layer=residual, interpolation_mode=interpolation_mode
     ):
         super(kp, self).__init__()
 
@@ -105,14 +105,16 @@ class kp(nn.Module):
 
         self.kps  = nn.ModuleList([
             kp_module(
-                n, dims, modules, layer=kp_layer,
+                n, dims, modules, layer=kp_layer, interpolation_mode = interpolation_mode,
                 make_up_layer=make_up_layer,
                 make_low_layer=make_low_layer,
                 make_hg_layer=make_hg_layer,
                 make_hg_layer_revr=make_hg_layer_revr,
                 make_pool_layer=make_pool_layer,
                 make_unpool_layer=make_unpool_layer,
-                make_merge_layer=make_merge_layer
+                make_merge_layer=make_merge_layer,
+
+
             ) for _ in range(nstack)
         ])
         self.cnvs = nn.ModuleList([

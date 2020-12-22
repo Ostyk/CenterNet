@@ -89,7 +89,7 @@ def train(training_dbs, validation_db, start_iter=0):
 
     # load data sampling function
     data_file   = "sample.{}".format(training_dbs[0].data)
-    sample_data = importlib.import_module(data_file).sample_data
+    sample_data = importlib.import_module(v).sample_data
 
     # allocating resources for parallel reading
     training_tasks   = init_parallel_jobs(training_dbs, training_queue, sample_data, True)

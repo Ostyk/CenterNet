@@ -125,12 +125,12 @@ def make_hg_layer(kernel, dim0, dim1, mod, layer=convolution, **kwargs):
     return nn.Sequential(*layers)
 
 class model(kp):
-    def __init__(self, db):
+    def __init__(self, db, interpolation_mode):
         n       = 5
         dims    = [256, 256, 384, 384, 384, 512]
         modules = [2, 2, 2, 2, 2, 4]
-        out_dim = 80
-
+        out_dim = 80 #make this a parameter
+        #interpolation_mode = 'nearest'
         super(model, self).__init__(
             db, n, 1, dims, modules, out_dim,
             make_tl_layer=make_tl_layer,
@@ -138,7 +138,7 @@ class model(kp):
             make_ct_layer=make_ct_layer,
             make_pool_layer=make_pool_layer,
             make_hg_layer=make_hg_layer,
-            kp_layer=residual, cnv_dim=256
+            kp_layer=residual, cnv_dim=256, interpolation_mode=interpolation_mode
         )
 
 loss = AELoss(pull_weight=1e-1, push_weight=1e-1, focal_loss=_neg_loss)
